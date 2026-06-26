@@ -7,21 +7,32 @@ const Analysis = require("../models/Analysis");
 const { protect } = require("../middleware/authMiddleware");
 
 // POST /api/resume/analyze
-router.post("/analyze", protect, upload.single("resume"), async (req, res) => {
+router.post("/analyze", protect, upload.fields([
+  { name: "resume", maxCount: 1 },
+  { name: "jdFile", maxCount: 1 }
+]), async (req, res) => {
   try {
     // 1. Check file exists
-    if (!req.file) {
+    const resumeFile = req.files?.resume?.[0];
+    if (!resumeFile) {
       return res.status(400).json({ message: "Please upload a PDF file" });
     }
 
     // 2. Check job description exists
-    const { jobDescription } = req.body;
+    let jobDescription = req.body.jobDescription || "";
+
+    // If JD uploaded as PDF, extract text from it
+    if (req.files?.jdFile?.[0]) {
+      const jdPdf = await pdfParse(req.files.jdFile[0].buffer);
+      jobDescription = jdPdf.text;
+    }
+
     if (!jobDescription || jobDescription.trim().length < 50) {
-      return res.status(400).json({ message: "Please provide a detailed job description (min 50 characters)" });
+      return res.status(400).json({ message: "Please provide a job description (text or PDF, min 50 characters)" });
     }
 
     // 3. Extract text from PDF buffer
-    const pdfData = await pdfParse(Buffer.from(req.file.buffer));
+    const pdfData = await pdfParse(resumeFile.buffer);
     const resumeText = pdfData.text;
 
     if (!resumeText || resumeText.trim().length < 50) {
@@ -39,6 +50,9 @@ router.post("/analyze", protect, upload.single("resume"), async (req, res) => {
       matchedKeywords: analysisResult.matchedKeywords,
       missingKeywords: analysisResult.missingKeywords,
       suggestions: analysisResult.suggestions,
+      sectionScores: analysisResult.sectionScores,
+      quickWins: analysisResult.quickWins,
+      strengths: analysisResult.strengths,
       resumeText: resumeText,
       jobDescription: jobDescription,
     });
@@ -51,6 +65,9 @@ router.post("/analyze", protect, upload.single("resume"), async (req, res) => {
       matchedKeywords: analysis.matchedKeywords,
       missingKeywords: analysis.missingKeywords,
       suggestions: analysis.suggestions,
+      sectionScores: analysis.sectionScores,
+      quickWins: analysis.quickWins,
+      strengths: analysis.strengths,
       createdAt: analysis.createdAt,
     });
 

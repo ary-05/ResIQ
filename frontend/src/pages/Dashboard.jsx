@@ -46,6 +46,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [dragOver, setDragOver] = useState(false);
+  const [jdMode, setJdMode] = useState("text");
+  const [jdFile, setJdFile] = useState(null);
 
   const goldGradient = "linear-gradient(90deg, #c9a84c, #e8d5a3, #a8956e)";
 
@@ -73,8 +75,10 @@ const Dashboard = () => {
 
   const handleSubmit = async () => {
     if (!file) return setError("Please upload your resume");
-    if (jobDescription.trim().length < 50)
+    if (jdMode === "text" && jobDescription.trim().length < 50)
       return setError("Job description must be at least 50 characters");
+    if (jdMode === "pdf" && !jdFile)
+      return setError("Please upload the job description PDF");
 
     setError("");
     setLoading(true);
@@ -83,7 +87,11 @@ const Dashboard = () => {
     try {
       const formData = new FormData();
       formData.append("resume", file);
-      formData.append("jobDescription", jobDescription);
+      if (jdMode === "pdf" && jdFile) {
+        formData.append("jdFile", jdFile);
+      } else {
+        formData.append("jobDescription", jobDescription);
+      }
 
       const { data } = await API.post("/api/resume/analyze", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -100,6 +108,8 @@ const Dashboard = () => {
   const handleReset = () => {
     setFile(null);
     setJobDescription("");
+    setJdFile(null);
+    setJdMode("text");
     setResult(null);
     setError("");
   };
@@ -177,25 +187,92 @@ const Dashboard = () => {
 
             {/* Job Description */}
             <div className="flex flex-col">
-              <label className="text-sm font-medium mb-2" style={{ color: "#c9a84c" }}>
-                Job Description
-              </label>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the full job description here..."
-                className="flex-1 rounded-xl p-4 text-sm resize-none outline-none transition"
-                style={{
-                  background: "#1c1c1c",
-                  border: "1px solid #8a7a5a",
-                  color: "#e8d5a3",
-                  caretColor: "#c9a84c",
-                  minHeight: "220px",
-                }}
-              />
-              <p className="text-xs mt-2 text-right" style={{ color: jobDescription.length < 50 ? "#f87171" : "#4ade80" }}>
-                {jobDescription.length} characters {jobDescription.length < 50 ? `(need ${50 - jobDescription.length} more)` : "✓"}
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium" style={{ color: "#c9a84c" }}>
+                  Job Description
+                </label>
+                {/* Toggle */}
+                <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid #8a7a5a" }}>
+                  <button
+                    onClick={() => setJdMode("text")}
+                    className="px-3 py-1 text-xs font-medium transition"
+                    style={{
+                      background: jdMode === "text" ? "linear-gradient(90deg, #c9a84c, #a8956e)" : "transparent",
+                      color: jdMode === "text" ? "#1a1a1a" : "#a89070"
+                    }}
+                  >
+                    Text
+                  </button>
+                  <button
+                    onClick={() => setJdMode("pdf")}
+                    className="px-3 py-1 text-xs font-medium transition"
+                    style={{
+                      background: jdMode === "pdf" ? "linear-gradient(90deg, #c9a84c, #a8956e)" : "transparent",
+                      color: jdMode === "pdf" ? "#1a1a1a" : "#a89070"
+                    }}
+                  >
+                    PDF
+                  </button>
+                </div>
+              </div>
+
+              {jdMode === "text" ? (
+                <>
+                  <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Paste the full job description here..."
+                    className="flex-1 rounded-xl p-4 text-sm resize-none outline-none transition"
+                    style={{
+                      background: "#1c1c1c",
+                      border: "1px solid #8a7a5a",
+                      color: "#e8d5a3",
+                      caretColor: "#c9a84c",
+                      minHeight: "220px",
+                    }}
+                  />
+                  <p className="text-xs mt-2 text-right"
+                    style={{ color: jobDescription.length < 50 ? "#f87171" : "#4ade80" }}>
+                    {jobDescription.length} characters {jobDescription.length < 50 ? `(need ${50 - jobDescription.length} more)` : "✓"}
+                  </p>
+                </>
+              ) : (
+                <div
+                  className="flex-1 rounded-xl flex flex-col items-center justify-center cursor-pointer transition"
+                  style={{
+                    background: "#1c1c1c",
+                    border: "2px dashed #8a7a5a",
+                    minHeight: "220px",
+                  }}
+                  onClick={() => document.getElementById("jdFileInput").click()}
+                >
+                  <input
+                    id="jdFileInput"
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files[0];
+                      if (f && f.type === "application/pdf") setJdFile(f);
+                      else setError("JD must be a PDF file");
+                    }}
+                  />
+                  {jdFile ? (
+                    <div className="text-center">
+                      <p className="text-sm font-medium" style={{ color: "#c9a84c" }}>{jdFile.name}</p>
+                      <p className="text-xs mt-1" style={{ color: "#a89070" }}>Click to change</p>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="#c9a84c" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-sm text-white">Upload JD as PDF</p>
+                      <p className="text-xs mt-1" style={{ color: "#a89070" }}>PDF only, max 5MB</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -298,7 +375,7 @@ const Dashboard = () => {
                 <div className="rounded-xl p-6"
                   style={{ background: "#1c1c1c", border: "1px solid #8a7a5a" }}>
                   <h3 className="text-sm font-semibold mb-4" style={{ color: "#4ade80" }}>
-                    💪 Your Strengths
+                    Your Strengths
                   </h3>
                   <div className="space-y-3">
                     {result.strengths.map((s, i) => (
@@ -316,7 +393,7 @@ const Dashboard = () => {
                 <div className="rounded-xl p-6"
                   style={{ background: "#1c1c1c", border: "1px solid #8a7a5a" }}>
                   <h3 className="text-sm font-semibold mb-4" style={{ color: "#fb923c" }}>
-                    ⚡ Quick Wins
+                    Quick Wins
                   </h3>
                   <div className="space-y-3">
                     {result.quickWins.map((w, i) => (
