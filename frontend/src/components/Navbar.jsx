@@ -30,6 +30,10 @@ const Navbar = () => {
 
       {/* Right side */}
       <div className="flex items-center gap-6">
+        <button onClick={() => navigate("/dashboard")} className="text-sm font-medium transition hover:opacity-80"
+          style={{ color: "#a89070" }}>
+          Dashboard
+        </button>
         <button
           onClick={() => navigate("/history")}
           className="text-sm font-medium transition hover:opacity-80"
