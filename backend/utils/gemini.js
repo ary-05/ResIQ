@@ -100,4 +100,69 @@ Return ONLY this exact JSON structure with no extra text, no markdown, no code b
   }
 };
 
-module.exports = { analyzeResume };
+const chatWithResume = async (message, conversationHistory, analysisContext, retries = 3) => {
+  const { GoogleGenerativeAI } = require("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+  const systemContext = `
+You are ResAI, an expert resume writer and career coach embedded inside ResIQ — an AI-powered resume analyzer.
+
+You are helping the user improve their resume for a specific job. Here is their full context:
+
+JOB TITLE: ${analysisContext.jobTitle}
+ATS SCORE: ${analysisContext.atsScore}/100
+
+RESUME TEXT:
+${analysisContext.resumeText || "Not available"}
+
+JOB DESCRIPTION:
+${analysisContext.jobDescription || "Not available"}
+
+MATCHED KEYWORDS: ${analysisContext.matchedKeywords?.join(", ") || "None"}
+MISSING KEYWORDS: ${analysisContext.missingKeywords?.join(", ") || "None"}
+
+SUGGESTIONS FROM ANALYSIS:
+${analysisContext.suggestions?.map((s, i) => `${i + 1}. ${s}`).join("\n") || "None"}
+
+YOUR ROLE:
+- Help the user rewrite resume bullets, summaries, skills sections, cover letter intros, etc.
+- Always tailor your output to the specific job description above
+- Naturally weave in missing keywords where appropriate
+- Keep language professional, concise, and ATS-friendly
+- When rewriting bullets, use strong action verbs and quantify where possible
+- Format your responses cleanly — use line breaks between multiple bullets
+- If asked for multiple options, provide 2-3 variants
+- Be direct and give copy-pasteable text, not just advice
+`;
+
+  // Build conversation for Gemini
+  const historyText = conversationHistory
+    .map((m) => `${m.role === "user" ? "User" : "ResAI"}: ${m.content}`)
+    .join("\n");
+
+  const fullPrompt = `${systemContext}
+
+CONVERSATION SO FAR:
+${historyText || "(This is the first message)"}
+
+User: ${message}
+ResAI:`;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const result = await model.generateContent(fullPrompt);
+      const response = await result.response;
+      return response.text().trim();
+    } catch (error) {
+      const is503 = error.message?.includes("503") || error.message?.includes("Service Unavailable");
+      if (is503 && attempt < retries) {
+        console.log(`Gemini 503 — retrying attempt ${attempt + 1} of ${retries}...`);
+        await new Promise((res) => setTimeout(res, 2000 * attempt));
+      } else {
+        throw error;
+      }
+    }
+  }
+};
+module.exports = { analyzeResume, chatWithResume };

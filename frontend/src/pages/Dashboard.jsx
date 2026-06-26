@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import ScoreGauge from "../components/ScoreGauge";
 import API from "../api/axios";
+import ResAI from "../components/ResAI";
 
 const AccordionItem = ({ index, suggestion }) => {
   const [open, setOpen] = useState(false);
@@ -478,6 +479,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+      <ResAI />
     </div>
   );
 };

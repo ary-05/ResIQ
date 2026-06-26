@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ScoreGauge from "../components/ScoreGauge";
 import API from "../api/axios";
+import ResAI from "../components/ResAI";
 
 // ── colour tokens (match design system exactly) ──────────────────────────────
 const C = {
@@ -456,6 +457,7 @@ const History = () => {
           loading={deleteLoading}
         />
       )}
+      <ResAI />
     </div>
   );
 };
