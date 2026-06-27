@@ -8,7 +8,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const goldGradient = "linear-gradient(90deg, #c9a84c, #e8d5a3, #a8956e)";

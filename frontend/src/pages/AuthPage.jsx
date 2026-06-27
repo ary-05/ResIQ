@@ -74,8 +74,8 @@ const AuthPage = () => {
         style={{ border: "1px solid #8a7a5a", height: "620px" }}>
 
         {/* ── LEFT HALF ── */}
-        <div className="w-1/2 relative overflow-hidden"
-          style={{ background: "linear-gradient(160deg, #1c1c1c 0%, #252525 100%)" }}>
+        <div className={`${isLogin ? "block" : "hidden md:block"} w-full md:w-1/2 relative overflow-hidden`}
+  style={{ background: "linear-gradient(160deg, #1c1c1c 0%, #252525 100%)" }}>
 
           {/* LOGIN FORM — slides out left when switching to register */}
           <div className="absolute inset-0 p-10 flex flex-col justify-center"
@@ -161,8 +161,8 @@ const AuthPage = () => {
         </div>
 
         {/* ── RIGHT HALF ── */}
-        <div className="w-1/2 relative overflow-hidden"
-          style={{ background: "linear-gradient(160deg, #2a2210 0%, #1a1508 50%, #0f0e09 100%)", borderLeft: "1px solid #8a7a5a" }}>
+        <div className={`${isLogin ? "hidden md:block" : "block"} w-full md:w-1/2 relative overflow-hidden`}
+  style={{ background: "linear-gradient(160deg, #2a2210 0%, #1a1508 50%, #0f0e09 100%)", borderLeft: "1px solid #8a7a5a" }}>
 
           {/* LOGIN BRANDING — slides out right when switching to register */}
           <div className="absolute inset-0 p-10 flex flex-col justify-between"

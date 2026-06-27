@@ -22,7 +22,7 @@ const AccordionItem = ({ index, suggestion }) => {
         className="w-full flex items-center gap-4 p-4 text-left transition"
       >
         <span
-          className="text-xs font-bold flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+          className="text-xs font-bold shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
           style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c" }}>
           {index + 1}
         </span>
@@ -123,7 +123,7 @@ const Dashboard = () => {
 
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: "8px", background: goldGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
             Analyze Your Resume
           </h1>
           <p className="text-sm" style={{ color: "#a89070" }}>
@@ -400,7 +400,7 @@ const Dashboard = () => {
                     {result.quickWins.map((w, i) => (
                       <div key={i} className="flex gap-3 items-start">
                         <span
-                          className="text-xs font-bold flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+                          className="text-xs font-bold shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
                           style={{ background: "rgba(251,146,60,0.15)", color: "#fb923c" }}>
                           {i + 1}
                         </span>
