@@ -3,7 +3,15 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const analyzeResume = async (resumeText, jobDescription, retries = 3) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      temperature: 0.2,
+      topP: 0.8,
+      topK: 20,
+      responseMimeType: "application/json",
+    },
+  });
 
   const prompt = `
 You are a world-class resume strategist, ATS optimization expert, and hiring manager with 15+ years of experience at top tech companies including Google, Microsoft, and Amazon. You have reviewed over 50,000 resumes and know exactly what makes a candidate stand out or get filtered out.
