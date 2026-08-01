@@ -7,6 +7,13 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   otp: { type: String },
   otpExpiry: { type: Date },
+
+  // ── Password reset flow ──────────────────────────────────────────────────
+  resetOtp: { type: String },
+  resetOtpExpiry: { type: Date },
+  resetTokenHash: { type: String },   // bcrypt hash of the short-lived reset JWT
+  resetTokenExpiry: { type: Date },
+
   createdAt: { type: Date, default: Date.now },
 });
 
