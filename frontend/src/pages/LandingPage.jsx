@@ -365,7 +365,7 @@ const LandingPage = () => {
                         </div>
 
                         <p style={{ color: "#8a7a5a", fontSize: "0.78rem", marginTop: "16px" }}>
-                            Free to use · No credit card · Results in 30 seconds
+                            Free to use · Results in 30 seconds
                         </p>
                     </div>
 
@@ -584,7 +584,7 @@ const LandingPage = () => {
                             Get started for free
                         </button>
                         <p style={{ color: "#8a7a5a", fontSize: "0.78rem", marginTop: "16px" }}>
-                            No credit card · No setup · 30 seconds to your first score
+                            30 seconds to your first score
                         </p>
                     </div>
                 </Reveal>
