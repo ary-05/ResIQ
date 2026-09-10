@@ -276,45 +276,41 @@ const AuthPage = () => {
 
   return (
     <>
-      {/* ── Back to home circular button ── */}
+      {/* ── Back to home button ── */}
       <button
         onClick={() => navigate("/")}
-        title="Back to home"
-        aria-label="Back to home"
         style={{
           position: "fixed",
-          top: "22px",
-          left: "22px",
+          top: "20px",
+          left: "20px",
           zIndex: 9999,
-          width: "42px",
-          height: "42px",
-          borderRadius: "50%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          gap: "8px",
+          padding: "9px 16px",
+          borderRadius: "10px",
           background: "rgba(26,26,26,0.85)",
           border: "1px solid #8a7a5a",
           color: "#c9a84c",
           cursor: "pointer",
+          fontSize: "0.82rem",
+          fontWeight: "600",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-          transition: "border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s",
+          transition: "border-color 0.2s, background 0.2s, color 0.2s",
+          letterSpacing: "0.02em",
         }}
         onMouseEnter={e => {
           e.currentTarget.style.borderColor = "#c9a84c";
-          e.currentTarget.style.background = "rgba(201,168,76,0.12)";
-          e.currentTarget.style.transform = "scale(1.06)";
-          e.currentTarget.style.boxShadow = "0 6px 20px rgba(201,168,76,0.25)";
+          e.currentTarget.style.background = "rgba(201,168,76,0.1)";
         }}
         onMouseLeave={e => {
           e.currentTarget.style.borderColor = "#8a7a5a";
           e.currentTarget.style.background = "rgba(26,26,26,0.85)";
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.4)";
         }}
+        aria-label="Back to home"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5" />
           <path d="M12 19l-7-7 7-7" />
         </svg>
